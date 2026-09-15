@@ -6,7 +6,8 @@ export function MovieDetailPage() {
   const { id } = useParams();
   const movieId = id ? Number(id) : undefined;
   const { movie, loading, error } = useMovieDetails(movieId);
-  const { isWatched, markWatched, unmarkWatched } = useWatchLogContext();
+  const { watched: watchedMovies, isWatched, markWatched, unmarkWatched, updateWatchedMovie } =
+    useWatchLogContext();
 
   if (loading) {
     return <p className="page">Cargando...</p>;
@@ -21,7 +22,8 @@ export function MovieDetailPage() {
     );
   }
 
-  const watched = isWatched(movie.id);
+  const watchedMovie = watchedMovies.find((entry) => entry.id === movie.id);
+  const isMovieWatched = isWatched(movie.id);
 
   return (
     <article className="page detail">
@@ -38,11 +40,51 @@ export function MovieDetailPage() {
         <p className="hero__rating">{movie.voteAverage}/10</p>
         <p className="hero__overview">{movie.overview}</p>
         <button
-          className={watched ? "btn" : "btn btn--primary"}
-          onClick={() => (watched ? unmarkWatched(movie.id) : markWatched(movie))}
+          className={isMovieWatched ? "btn" : "btn btn--primary"}
+          onClick={() => (isMovieWatched ? unmarkWatched(movie.id) : markWatched(movie))}
         >
-          {watched ? "Quitar de vistas" : "Marcar como vista"}
+          {isMovieWatched ? "Quitar de vistas" : "Marcar como vista"}
         </button>
+
+        {isMovieWatched ? (
+          <div className="review-panel">
+            <div>
+              <label className="review-label">Tu valoración</label>
+              <div className="star-rating" aria-label="Valoración en estrellas">
+                {Array.from({ length: 5 }, (_, index) => {
+                  const value = index + 1;
+                  const filled = (watchedMovie?.rating ?? 0) >= value;
+
+                  return (
+                    <button
+                      key={value}
+                      type="button"
+                      className={filled ? "star star--filled" : "star"}
+                      onClick={() => updateWatchedMovie(movie.id, { rating: value })}
+                      aria-label={`Calificar con ${value} estrellas`}
+                    >
+                      {filled ? "★" : "☆"}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="review-field">
+              <label htmlFor="movie-review" className="review-label">
+                Reseña
+              </label>
+              <textarea
+                id="movie-review"
+                value={watchedMovie?.review ?? ""}
+                onChange={(event) =>
+                  updateWatchedMovie(movie.id, { review: event.target.value })
+                }
+                placeholder="Contame qué te pareció esta película..."
+              />
+            </div>
+          </div>
+        ) : null}
       </div>
     </article>
   );

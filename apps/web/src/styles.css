@@ -164,6 +164,59 @@ main {
   line-height: 1.5;
 }
 
+.review-panel {
+  margin-top: 24px;
+  display: grid;
+  gap: 18px;
+  padding: 20px;
+  border: 1px solid rgba(139, 108, 255, 0.25);
+  background: rgba(20, 24, 51, 0.8);
+  border-radius: 18px;
+}
+
+.review-label {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.star-rating {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.star {
+  border: 0;
+  background: transparent;
+  color: #5b648f;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.15s ease;
+}
+
+.star:hover {
+  transform: translateY(-1px);
+}
+
+.star--filled {
+  color: #fbbf24;
+}
+
+.review-field textarea {
+  width: 100%;
+  min-height: 120px;
+  resize: vertical;
+  border-radius: 14px;
+  border: 1px solid #2d3566;
+  background: #10173b;
+  color: var(--text);
+  padding: 12px 14px;
+}
+
 .hero__actions {
   display: flex;
   gap: 12px;
@@ -244,6 +297,11 @@ main {
   margin: 0;
   color: var(--muted);
   font-size: 12px;
+}
+
+.card__rating {
+  margin-top: 6px !important;
+  color: #fbbf24 !important;
 }
 
 .card__actions {

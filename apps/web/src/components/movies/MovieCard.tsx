@@ -31,6 +31,7 @@ export function MovieCard({
           <p>
             {movie.releaseYear ?? "—"} · {movie.voteAverage}/10
           </p>
+          {movie.rating ? <p className="card__rating">⭐ {movie.rating}/5</p> : null}
         </div>
       </Link>
       {onToggleWatched && onTogglePending ? (

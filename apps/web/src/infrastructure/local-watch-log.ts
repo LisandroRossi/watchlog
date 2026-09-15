@@ -25,7 +25,20 @@ export class LocalWatchLog {
     if (this.has(movie.id)) {
       return;
     }
-    this.save([movie, ...this.list()]);
+    this.save([{ ...movie, rating: undefined, review: undefined }, ...this.list()]);
+  }
+
+  update(id: number, updates: Partial<Pick<Movie, "rating" | "review">>) {
+    const items = this.list();
+    const index = items.findIndex((movie) => movie.id === id);
+
+    if (index === -1) {
+      return;
+    }
+
+    const nextItems = [...items];
+    nextItems[index] = { ...nextItems[index], ...updates };
+    this.save(nextItems);
   }
 
   remove(id: number) {

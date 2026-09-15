@@ -16,6 +16,14 @@ export function useWatchLog() {
   const isWatched = useCallback((id: number) => watched.some((movie) => movie.id === id), [watched]);
   const isPending = useCallback((id: number) => pending.some((movie) => movie.id === id), [pending]);
 
+  const updateWatchedMovie = useCallback(
+    (id: number, updates: Partial<Pick<Movie, "rating" | "review">>) => {
+      watchLog.update(id, updates);
+      setWatched(watchLog.list());
+    },
+    [],
+  );
+
   const markWatched = useCallback((movie: Movie) => {
     watchLog.add(movie);
     watchLog.removePending(movie.id);
@@ -45,6 +53,7 @@ export function useWatchLog() {
     pending,
     isWatched,
     isPending,
+    updateWatchedMovie,
     markWatched,
     unmarkWatched,
     markPending,

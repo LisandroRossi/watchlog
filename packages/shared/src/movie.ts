@@ -7,6 +7,8 @@ export type Movie = {
   releaseYear: string | null;
   voteAverage: number;
   genres: string[];
+  rating?: number;
+  review?: string;
 };
 
 export type PagedMovies = {
