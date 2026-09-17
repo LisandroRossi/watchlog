@@ -1,6 +1,7 @@
 type RawgGamePayload = {
   id: number;
   name?: string;
+  description?: string;
   description_raw?: string;
   background_image?: string | null;
   released?: string | null;

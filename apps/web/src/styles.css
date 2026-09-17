@@ -562,10 +562,17 @@ main {
 
 .game-detail {
   --game-yellow: #f4c430;
+  --game-ink: #241b05;
+  --game-muted: #796b42;
   color: var(--game-ink);
   background: linear-gradient(135deg, #fff8d7, #fffdf0);
   padding: 28px;
   border-radius: 24px;
+}
+
+.game-detail h1,
+.game-detail .hero__overview {
+  color: var(--game-ink);
 }
 
 .game-detail .back,

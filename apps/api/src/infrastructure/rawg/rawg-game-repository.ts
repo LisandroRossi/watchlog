@@ -4,6 +4,7 @@ import { RawgClient, RawgHttpError } from "./rawg-client.js";
 type RawgGameLike = {
   id: number;
   name?: string;
+  description?: string;
   description_raw?: string;
   background_image?: string | null;
   released?: string | null;
@@ -47,12 +48,38 @@ export class RawgGameRepository {
     return {
       id: payload.id,
       title: payload.name || "Sin título",
-      description: payload.description_raw || "Sin descripción disponible.",
+      description: payload.description_raw || payload.description || "Sin descripción disponible.",
       coverUrl: payload.background_image ?? null,
       backgroundUrl: payload.background_image ?? null,
       releaseYear: payload.released ? payload.released.slice(0, 4) : null,
       rating: Number((payload.rating ?? 0).toFixed(1)),
-      genres: payload.genres?.map((genre) => genre.name) ?? [],
+      genres: payload.genres?.map((genre) => this.translateGenre(genre.name)) ?? [],
     };
+  }
+
+  private translateGenre(genre: string): string {
+    const translations: Record<string, string> = {
+      Action: "Acción",
+      Adventure: "Aventura",
+      Arcade: "Arcade",
+      "Board Games": "Juegos de mesa",
+      Card: "Cartas",
+      Casual: "Casual",
+      Educational: "Educativo",
+      Family: "Familiar",
+      Fighting: "Lucha",
+      Indie: "Indie",
+      "Massively Multiplayer": "Multijugador masivo",
+      Platformer: "Plataformas",
+      Puzzle: "Rompecabezas",
+      Racing: "Carreras",
+      RPG: "Rol",
+      Shooter: "Disparos",
+      Simulation: "Simulación",
+      Sports: "Deportes",
+      Strategy: "Estrategia",
+    };
+
+    return translations[genre] ?? genre;
   }
 }

@@ -36,6 +36,7 @@ export function Sidebar({
       <nav className="nav">
         {isGames ? (
           <>
+            <NavLink to="/games">Buscar videojuego</NavLink>
             <NavLink to="/games/want"><span>Quiero Jugar</span><b className="nav__count">{gameWantedCount}</b></NavLink>
             <NavLink to="/games/playing"><span>Jugando</span><b className="nav__count">{gamePlayingCount}</b></NavLink>
             <NavLink to="/games/completed"><span>Completado</span><b className="nav__count">{gameCompletedCount}</b></NavLink>
