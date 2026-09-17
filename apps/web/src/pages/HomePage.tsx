@@ -4,6 +4,7 @@ import { MovieGrid } from "../components/movies/MovieGrid";
 import { useMovieSearch } from "../hooks/use-movie-search";
 import { usePopularMovies } from "../hooks/use-popular-movies";
 import { useWatchLogContext } from "../hooks/watch-log-context";
+import { ModeSwitcher } from "../components/layout/ModeSwitcher";
 
 export function HomePage() {
   const [query, setQuery] = useState("");
@@ -29,6 +30,7 @@ export function HomePage() {
   return (
     <div className="page">
       <header className="topbar">
+        <ModeSwitcher />
         <input
           value={query}
           onChange={(event) => setQuery(event.target.value)}

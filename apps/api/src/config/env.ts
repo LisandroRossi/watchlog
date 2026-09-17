@@ -20,5 +20,7 @@ export const env = {
   tmdbBaseUrl: process.env.TMDB_BASE_URL ?? "https://api.themoviedb.org/3",
   tmdbImageBaseUrl:
     process.env.TMDB_IMAGE_BASE_URL ?? "https://image.tmdb.org/t/p",
+  rawgApiKey: process.env.RAWG_API_KEY ?? "",
+  rawgBaseUrl: process.env.RAWG_BASE_URL ?? "https://api.rawg.io/api",
   corsOrigin: process.env.CORS_ORIGIN ?? "http://localhost:5173",
 };

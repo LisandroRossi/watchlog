@@ -9,9 +9,14 @@ import { TmdbMovieRepository } from "./infrastructure/tmdb/tmdb-movie-repository
 import { errorHandler } from "./interfaces/http/error-handler.js";
 import { MovieController } from "./interfaces/http/movie-controller.js";
 import { createMovieRouter } from "./interfaces/http/movie-router.js";
+import { RawgClient } from "./infrastructure/rawg/rawg-client.js";
+import { RawgGameRepository } from "./infrastructure/rawg/rawg-game-repository.js";
+import { GameController } from "./interfaces/http/game-controller.js";
+import { createGameRouter } from "./interfaces/http/game-router.js";
 
 const tmdb = new TmdbClient(env.tmdbBaseUrl, env.tmdbApiKey);
 const movies = new TmdbMovieRepository(tmdb, env.tmdbImageBaseUrl);
+const games = new RawgGameRepository(new RawgClient(env.rawgBaseUrl, env.rawgApiKey));
 
 const controller = new MovieController(
   new SearchMovies(movies),
@@ -26,6 +31,7 @@ app.get("/api/health", (_req, res) => {
   res.json({ ok: true, service: "watchlog-api" });
 });
 app.use("/api/movies", createMovieRouter(controller));
+app.use("/api/games", createGameRouter(new GameController(games)));
 app.use(errorHandler);
 
 app.listen(env.port, () => {
