@@ -27,7 +27,6 @@ export function GameStatusPage({ status }: GameStatusPageProps) {
         <div>
           <span className="pill">RAWG collection</span>
           <h1>{statusLabels[status]}</h1>
-          <p className="lede">Videojuegos guardados en esta lista.</p>
         </div>
       </header>
       <GameGrid

@@ -1,4 +1,5 @@
 import { MovieGrid } from "../components/movies/MovieGrid";
+import { ModeSwitcher } from "../components/layout/ModeSwitcher";
 import { useWatchLogContext } from "../hooks/watch-log-context";
 
 export function WatchedPage() {
@@ -6,6 +7,7 @@ export function WatchedPage() {
 
   return (
     <div className="page">
+      <ModeSwitcher />
       <h1>Películas vistas</h1>
       <p className="lede">
         Marcá películas desde el detalle para ir armando tu bitácora. Se guarda en este

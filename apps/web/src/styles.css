@@ -84,9 +84,17 @@ main {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
+  align-items: flex-start;
+  min-height: 44px;
 }
 
 .mode-switcher__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  min-height: 44px;
+  line-height: 1;
   border: 1px solid transparent;
   border-radius: 12px;
   padding: 10px 16px;
@@ -448,6 +456,25 @@ main {
   min-height: calc(100vh - 48px);
   padding: 28px;
   border-radius: 24px;
+  gap: 12px;
+  align-content: start;
+}
+
+.game-page .topbar {
+  gap: 8px;
+}
+
+.game-page .game-heading,
+.game-status-page .section-head {
+  margin-top: -4px;
+}
+
+.game-status-page .section-head h1 {
+  margin: 8px 0 4px;
+}
+
+.game-status-page .empty {
+  margin: 0;
 }
 
 .game-page .topbar input {

@@ -1,4 +1,5 @@
 import { MovieGrid } from "../components/movies/MovieGrid";
+import { ModeSwitcher } from "../components/layout/ModeSwitcher";
 import { useWatchLogContext } from "../hooks/watch-log-context";
 
 export function PendingPage() {
@@ -7,6 +8,7 @@ export function PendingPage() {
 
   return (
     <div className="page">
+      <ModeSwitcher />
       <h1>Películas pendientes</h1>
       <p className="lede">Películas que quieres ver más adelante.</p>
       <MovieGrid
