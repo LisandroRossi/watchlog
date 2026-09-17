@@ -1,5 +1,6 @@
 type TmdbMoviePayload = {
   id: number;
+  media_type?: "movie" | "tv" | "person";
   title?: string;
   name?: string;
   overview?: string;
@@ -35,11 +36,15 @@ export class TmdbClient {
   ) {}
 
   searchMovies(query: string, page: number) {
-    return this.get<TmdbPagedPayload>("/search/movie", { query, page: String(page) });
+    return this.get<TmdbPagedPayload>("/search/multi", {
+      query,
+      page: String(page),
+      include_adult: "false",
+    });
   }
 
-  movieDetails(id: number) {
-    return this.get<TmdbMoviePayload>(`/movie/${id}`, { language: "es-ES" });
+  movieDetails(id: number, mediaType: "movie" | "tv" = "movie") {
+    return this.get<TmdbMoviePayload>(`/${mediaType}/${id}`, { language: "es-ES" });
   }
 
   popularMovies(page: number) {

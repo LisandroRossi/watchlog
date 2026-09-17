@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import type { Movie } from "@watchlog/shared";
 import { movieApi } from "../infrastructure/movie-api";
 
-export function useMovieDetails(id: number | undefined) {
+export function useMovieDetails(id: number | undefined, mediaType?: Movie["mediaType"]) {
   const [movie, setMovie] = useState<Movie | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -17,7 +17,7 @@ export function useMovieDetails(id: number | undefined) {
     let cancelled = false;
     setLoading(true);
     movieApi
-      .details(id)
+      .details(id, mediaType)
       .then((result) => {
         if (!cancelled) {
           setMovie(result);
@@ -37,7 +37,7 @@ export function useMovieDetails(id: number | undefined) {
     return () => {
       cancelled = true;
     };
-  }, [id]);
+  }, [id, mediaType]);
 
   return { movie, loading, error };
 }

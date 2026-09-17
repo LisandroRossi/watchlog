@@ -1,11 +1,13 @@
 import { Link, useParams } from "react-router-dom";
+import type { Movie } from "@watchlog/shared";
 import { useMovieDetails } from "../hooks/use-movie-details";
 import { useWatchLogContext } from "../hooks/watch-log-context";
 
 export function MovieDetailPage() {
   const { id } = useParams();
   const movieId = id ? Number(id) : undefined;
-  const { movie, loading, error } = useMovieDetails(movieId);
+  const mediaType = new URLSearchParams(window.location.search).get("type") as Movie["mediaType"];
+  const { movie, loading, error } = useMovieDetails(movieId, mediaType);
   const { watched: watchedMovies, isWatched, markWatched, unmarkWatched, updateWatchedMovie } =
     useWatchLogContext();
 

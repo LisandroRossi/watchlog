@@ -18,7 +18,8 @@ export const movieApi = {
   popular(page = 1) {
     return getJson<PagedMovies>(`${API_BASE}/popular?page=${page}`);
   },
-  details(id: number) {
-    return getJson<Movie>(`${API_BASE}/${id}`);
+  details(id: number, mediaType?: Movie["mediaType"]) {
+    const query = mediaType ? `?type=${mediaType}` : "";
+    return getJson<Movie>(`${API_BASE}/${id}${query}`);
   },
 };

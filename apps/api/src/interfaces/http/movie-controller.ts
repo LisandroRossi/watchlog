@@ -30,7 +30,8 @@ export class MovieController {
       return;
     }
 
-    const movie = await this.getMovieDetails.execute(id);
+    const mediaType = request.query.type === "tv" ? "tv" : "movie";
+    const movie = await this.getMovieDetails.execute(id, mediaType);
     if (!movie) {
       response.status(404).json({ error: "Película no encontrada." });
       return;

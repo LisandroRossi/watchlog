@@ -32,7 +32,7 @@ export function HeroFeatured({
         <p className="hero__rating">{movie.voteAverage}/10</p>
         <p className="hero__overview">{movie.overview}</p>
         <div className="hero__actions">
-          <Link className="btn btn--primary" to={`/movie/${movie.id}`}>
+          <Link className="btn btn--primary" to={`/movie/${movie.id}?type=${movie.mediaType ?? "movie"}`}>
             Ver detalles
           </Link>
           <button className="btn" onClick={onToggleWatched} type="button">

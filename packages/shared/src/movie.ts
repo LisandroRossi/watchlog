@@ -1,5 +1,6 @@
 export type Movie = {
   id: number;
+  mediaType?: "movie" | "tv";
   title: string;
   overview: string;
   posterPath: string | null;

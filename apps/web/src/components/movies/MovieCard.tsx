@@ -18,7 +18,7 @@ export function MovieCard({
 }: MovieCardProps) {
   return (
     <article className="card">
-      <Link to={`/movie/${movie.id}`} className="card__link">
+      <Link to={`/movie/${movie.id}?type=${movie.mediaType ?? "movie"}`} className="card__link">
         {movie.posterPath ? (
           <img src={movie.posterPath} alt="" />
         ) : (

@@ -2,6 +2,6 @@ import type { Movie, PagedMovies } from "@watchlog/shared";
 
 export interface MovieRepository {
   search(query: string, page?: number): Promise<PagedMovies>;
-  findById(id: number): Promise<Movie | null>;
+  findById(id: number, mediaType?: "movie" | "tv"): Promise<Movie | null>;
   popular(page?: number): Promise<PagedMovies>;
 }

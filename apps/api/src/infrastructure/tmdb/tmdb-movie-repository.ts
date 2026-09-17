@@ -4,6 +4,7 @@ import { TmdbClient, TmdbHttpError } from "./tmdb-client.js";
 
 type TmdbMovieLike = {
   id: number;
+  media_type?: "movie" | "tv" | "person";
   title?: string;
   name?: string;
   overview?: string;
@@ -26,14 +27,16 @@ export class TmdbMovieRepository implements MovieRepository {
     return {
       page: payload.page,
       totalPages: payload.total_pages,
-      results: payload.results.map((movie) => this.toMovie(movie)),
+      results: payload.results
+        .filter((movie) => movie.media_type !== "person")
+        .map((movie) => this.toMovie(movie)),
     };
   }
 
-  async findById(id: number): Promise<Movie | null> {
+  async findById(id: number, mediaType: "movie" | "tv" = "movie"): Promise<Movie | null> {
     try {
-      const payload = await this.client.movieDetails(id);
-      return this.toMovie(payload);
+      const payload = await this.client.movieDetails(id, mediaType);
+      return this.toMovie({ ...payload, media_type: mediaType });
     } catch (error) {
       if (error instanceof TmdbHttpError && error.status === 404) {
         return null;
@@ -55,6 +58,7 @@ export class TmdbMovieRepository implements MovieRepository {
     const date = payload.release_date || payload.first_air_date || "";
     return {
       id: payload.id,
+      mediaType: payload.media_type === "tv" ? "tv" : "movie",
       title: payload.title || payload.name || "Sin título",
       overview: payload.overview || "Sin descripción disponible.",
       posterPath: posterUrl(payload.poster_path ?? null, this.imageBaseUrl),
