@@ -1,11 +1,17 @@
 import type { Movie } from "@watchlog/shared";
 
-const STORAGE_KEY = "watchlog.watched";
-const PENDING_STORAGE_KEY = "watchlog.pending";
-
 export class LocalWatchLog {
+  private readonly storageKey: string;
+  private readonly pendingStorageKey: string;
+
+  constructor(userId: string) {
+    this.storageKey = `watchlog.${userId}.watched`;
+    this.pendingStorageKey = `watchlog.${userId}.pending`;
+    this.migrateLegacyData();
+  }
+
   list(): Movie[] {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(this.storageKey);
     if (!raw) {
       return [];
     }
@@ -46,7 +52,7 @@ export class LocalWatchLog {
   }
 
   listPending(): Movie[] {
-    const raw = localStorage.getItem(PENDING_STORAGE_KEY);
+    const raw = localStorage.getItem(this.pendingStorageKey);
     if (!raw) {
       return [];
     }
@@ -70,10 +76,25 @@ export class LocalWatchLog {
   }
 
   private save(movies: Movie[]) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(movies));
+    localStorage.setItem(this.storageKey, JSON.stringify(movies));
   }
 
   private savePending(movies: Movie[]) {
-    localStorage.setItem(PENDING_STORAGE_KEY, JSON.stringify(movies));
+    localStorage.setItem(this.pendingStorageKey, JSON.stringify(movies));
+  }
+
+  private migrateLegacyData() {
+    const migrationKey = "watchlog.legacy.movies-migrated";
+    if (!localStorage.getItem(migrationKey)) {
+      if (!localStorage.getItem(this.storageKey) && localStorage.getItem("watchlog.watched")) {
+        localStorage.setItem(this.storageKey, localStorage.getItem("watchlog.watched")!);
+      }
+      if (!localStorage.getItem(this.pendingStorageKey) && localStorage.getItem("watchlog.pending")) {
+        localStorage.setItem(this.pendingStorageKey, localStorage.getItem("watchlog.pending")!);
+      }
+      localStorage.removeItem("watchlog.watched");
+      localStorage.removeItem("watchlog.pending");
+      localStorage.setItem(migrationKey, "true");
+    }
   }
 }

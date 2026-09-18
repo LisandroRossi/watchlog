@@ -8,7 +8,8 @@ Stack inicial: **React + Vite** (web responsive) y **Node + Express** (API). El 
 
 - Home con películas populares y búsqueda
 - Detalle (descripción, año, rating, géneros)
-- Lista de vistas persistida en `localStorage`
+- Login y registro persistidos en SQLite
+- Listas de cada usuario aisladas por cuenta
 - La API key de TMDB vive solo en el servidor
 
 ## Arquitectura
@@ -39,6 +40,8 @@ npm run dev
 
 - Web: http://localhost:5173
 - API: http://localhost:4000/api/health
+
+La base de datos SQLite se crea automáticamente como `apps/api/watchlog.sqlite`. El primer usuario que inicie sesión recibe los datos legacy de `localStorage`, si existían.
 
 ## Scripts
 

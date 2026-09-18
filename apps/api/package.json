@@ -10,7 +10,9 @@
     "test": "tsx --test src/application/search-movies.test.ts"
   },
   "dependencies": {
+    "@types/better-sqlite3": "^9.6.0",
     "@watchlog/shared": "*",
+    "better-sqlite3": "^13.0.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2"

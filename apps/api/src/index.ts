@@ -13,6 +13,8 @@ import { RawgClient } from "./infrastructure/rawg/rawg-client.js";
 import { RawgGameRepository } from "./infrastructure/rawg/rawg-game-repository.js";
 import { GameController } from "./interfaces/http/game-controller.js";
 import { createGameRouter } from "./interfaces/http/game-router.js";
+import { AuthStore } from "./infrastructure/auth/auth-store.js";
+import { createAuthRouter } from "./interfaces/http/auth-router.js";
 
 const tmdb = new TmdbClient(env.tmdbBaseUrl, env.tmdbApiKey);
 const movies = new TmdbMovieRepository(tmdb, env.tmdbImageBaseUrl);
@@ -32,6 +34,7 @@ app.get("/api/health", (_req, res) => {
 });
 app.use("/api/movies", createMovieRouter(controller));
 app.use("/api/games", createGameRouter(new GameController(games)));
+app.use("/api/auth", createAuthRouter(new AuthStore()));
 app.use(errorHandler);
 
 app.listen(env.port, () => {

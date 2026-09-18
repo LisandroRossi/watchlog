@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { NavLink } from "react-router-dom";
 
 type SidebarProps = {
@@ -9,6 +10,9 @@ type SidebarProps = {
   gameAbandonedCount?: number;
   gameReplayingCount?: number;
   isGames?: boolean;
+  userName: string;
+  userEmail: string;
+  onLogout: () => Promise<void>;
 };
 
 export function Sidebar({
@@ -20,18 +24,39 @@ export function Sidebar({
   gameAbandonedCount = 0,
   gameReplayingCount = 0,
   isGames = false,
+  userName,
+  userEmail,
+  onLogout,
 }: SidebarProps) {
+  const [profileOpen, setProfileOpen] = useState(false);
+  const initials = userName
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase();
+
   return (
     <aside className="sidebar">
       <div className="brand">
-        <span className="brand__mark" aria-hidden="true">
-          WL
-        </span>
-        <div>
-          <strong>Watchlog</strong>
-          <p>Bitácora personal</p>
-        </div>
+        <button className="brand__mark brand__mark--button" aria-label="Abrir perfil" onClick={() => setProfileOpen((open) => !open)}>
+          {initials || "U"}
+        </button>
+        <button className="brand__profile" onClick={() => setProfileOpen((open) => !open)}>
+          <strong>{userName}</strong>
+          <p>Ver perfil</p>
+        </button>
       </div>
+
+      {profileOpen ? (
+        <section className="profile-panel">
+          <span className="profile-panel__eyebrow">Perfil</span>
+          <strong>{userName}</strong>
+          <span>{userEmail}</span>
+          <button className="sidebar__logout" onClick={onLogout}>Cerrar sesión</button>
+        </section>
+      ) : null}
 
       <nav className="nav">
         {isGames ? (

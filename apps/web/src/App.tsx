@@ -2,9 +2,11 @@ import { Outlet, useLocation } from "react-router-dom";
 import { Sidebar } from "./components/layout/Sidebar";
 import { useWatchLogContext } from "./hooks/watch-log-context";
 import { useGameLogContext } from "./hooks/game-log-context";
+import { useAuth } from "./hooks/auth-context";
 
 export function App() {
   const { watched, pending } = useWatchLogContext();
+  const { user, logout } = useAuth();
   const { watched: playedGames, pending: wantedGames, all: allGames } = useGameLogContext();
   const gameCount = (status: "playing" | "abandoned" | "replaying") =>
     allGames.filter((game) => game.status === status).length;
@@ -21,6 +23,9 @@ export function App() {
         gameAbandonedCount={gameCount("abandoned")}
         gameReplayingCount={gameCount("replaying")}
         isGames={isGames}
+        userName={user.name}
+        userEmail={user.email}
+        onLogout={logout}
       />
       <main>
         <Outlet />
