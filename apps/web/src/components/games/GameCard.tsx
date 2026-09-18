@@ -4,6 +4,7 @@ import type { Game, GameStatus } from "@watchlog/shared";
 type Props = {
   game: Game;
   status?: GameStatus;
+  actionMode?: "want" | "playing" | "completed" | "abandoned";
   onWant?: () => void;
   onCompleted?: () => void;
   onPlaying?: () => void;
@@ -11,7 +12,7 @@ type Props = {
   onAbandoned?: () => void;
 };
 
-export function GameCard({ game, status, onWant, onCompleted, onPlaying, onReplaying, onAbandoned }: Props) {
+export function GameCard({ game, status, actionMode, onWant, onCompleted, onPlaying, onReplaying, onAbandoned }: Props) {
   return (
     <article className="card game-card">
       <Link to={`/games/${game.id}`} className="card__link">
@@ -24,7 +25,19 @@ export function GameCard({ game, status, onWant, onCompleted, onPlaying, onRepla
       </Link>
       {onWant && onCompleted ? (
         <div className="card__actions">
-          {status === "playing" ? (
+          {actionMode === "want" ? (
+            <button className="btn btn--small btn--game-primary" onClick={onPlaying} type="button">Empezar</button>
+          ) : actionMode === "completed" ? (
+            <button className="btn btn--small btn--game-primary" onClick={onReplaying} type="button">Quiero rejugarlo</button>
+          ) : actionMode === "playing" ? (
+            <>
+              <button className="btn btn--small btn--active" onClick={onCompleted} type="button">Completado</button>
+              <button className="btn btn--small" onClick={onAbandoned} type="button">Abandonado</button>
+              <button className="btn btn--small btn--pending" onClick={onReplaying} type="button">Rejugando</button>
+            </>
+          ) : actionMode === "abandoned" ? (
+            <button className="btn btn--small btn--game-primary" onClick={onPlaying} type="button">Retomar Juego</button>
+          ) : status === "playing" ? (
             <>
               <button className="btn btn--small btn--pending" onClick={onReplaying} type="button">Rejugando</button>
               <button className="btn btn--small" onClick={onAbandoned} type="button">Abandonado</button>
@@ -35,7 +48,7 @@ export function GameCard({ game, status, onWant, onCompleted, onPlaying, onRepla
               <button className={status === "completed" ? "btn btn--small btn--active" : "btn btn--small"} onClick={onCompleted} type="button">Jugado</button>
             </>
           )}
-          {status === "want" && onPlaying ? <button className="btn btn--small btn--game-primary" onClick={onPlaying} type="button">Empezar</button> : null}
+          {status === "want" && actionMode !== "want" && onPlaying ? <button className="btn btn--small btn--game-primary" onClick={onPlaying} type="button">Empezar</button> : null}
         </div>
       ) : null}
     </article>

@@ -32,6 +32,7 @@ export function GameStatusPage({ status }: GameStatusPageProps) {
       <GameGrid
         games={games}
         statusOf={log.statusOf}
+        actionMode={status === "want" || status === "playing" || status === "completed" || status === "abandoned" ? status : undefined}
         onWant={(game) => setStatus(game, "want")}
         onCompleted={(game) => setStatus(game, "completed")}
         onPlaying={(game) => setStatus(game, "playing")}
