@@ -9,6 +9,7 @@ type SidebarProps = {
   gamePlayingCount?: number;
   gameAbandonedCount?: number;
   gameReplayingCount?: number;
+  gamePlatinadoCount?: number;
   isGames?: boolean;
   userName: string;
   userEmail: string;
@@ -23,6 +24,7 @@ export function Sidebar({
   gamePlayingCount = 0,
   gameAbandonedCount = 0,
   gameReplayingCount = 0,
+  gamePlatinadoCount = 0,
   isGames = false,
   userName,
   userEmail,
@@ -67,6 +69,7 @@ export function Sidebar({
             <NavLink to="/games/completed"><span>Completado</span><b className="nav__count">{gameCompletedCount}</b></NavLink>
             <NavLink to="/games/abandoned"><span>Abandonado</span><b className="nav__count">{gameAbandonedCount}</b></NavLink>
             <NavLink to="/games/replaying"><span>Rejugando</span><b className="nav__count">{gameReplayingCount}</b></NavLink>
+            <NavLink to="/games/platinado"><span>Platinado</span><b className="nav__count">{gamePlatinadoCount}</b></NavLink>
           </>
         ) : (
           <>

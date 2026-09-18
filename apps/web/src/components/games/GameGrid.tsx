@@ -4,15 +4,16 @@ import { GameCard } from "./GameCard";
 type Props = {
   games: Game[];
   statusOf: (id: number) => GameStatus | undefined;
-  actionMode?: "want" | "playing" | "completed" | "abandoned";
+  actionMode?: GameStatus;
   onWant?: (game: Game) => void;
   onCompleted?: (game: Game) => void;
   onPlaying?: (game: Game) => void;
   onReplaying?: (game: Game) => void;
   onAbandoned?: (game: Game) => void;
+  onPlatinado?: (game: Game) => void;
 };
 
-export function GameGrid({ games, statusOf, actionMode, onWant, onCompleted, onPlaying, onReplaying, onAbandoned }: Props) {
+export function GameGrid({ games, statusOf, actionMode, onWant, onCompleted, onPlaying, onReplaying, onAbandoned, onPlatinado }: Props) {
   if (!games.length) return <p className="empty">No hay videojuegos para mostrar.</p>;
   return (
     <div className="grid">
@@ -27,6 +28,7 @@ export function GameGrid({ games, statusOf, actionMode, onWant, onCompleted, onP
           onPlaying={onPlaying ? () => onPlaying(game) : undefined}
           onReplaying={onReplaying ? () => onReplaying(game) : undefined}
           onAbandoned={onAbandoned ? () => onAbandoned(game) : undefined}
+          onPlatinado={onPlatinado ? () => onPlatinado(game) : undefined}
         />
       ))}
     </div>

@@ -13,6 +13,7 @@ const statusLabels: Record<GameStatus, string> = {
   completed: "Completado",
   abandoned: "Abandonado",
   replaying: "Rejugando",
+  platinado: "Platinado",
 };
 
 export function GameStatusPage({ status }: GameStatusPageProps) {
@@ -32,12 +33,13 @@ export function GameStatusPage({ status }: GameStatusPageProps) {
       <GameGrid
         games={games}
         statusOf={log.statusOf}
-        actionMode={status === "want" || status === "playing" || status === "completed" || status === "abandoned" ? status : undefined}
+        actionMode={status}
         onWant={(game) => setStatus(game, "want")}
         onCompleted={(game) => setStatus(game, "completed")}
         onPlaying={(game) => setStatus(game, "playing")}
         onReplaying={(game) => setStatus(game, "replaying")}
         onAbandoned={(game) => setStatus(game, "abandoned")}
+        onPlatinado={(game) => setStatus(game, "platinado")}
       />
     </div>
   );

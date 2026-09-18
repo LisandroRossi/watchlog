@@ -8,7 +8,7 @@ export function App() {
   const { watched, pending } = useWatchLogContext();
   const { user, logout } = useAuth();
   const { watched: playedGames, pending: wantedGames, all: allGames } = useGameLogContext();
-  const gameCount = (status: "playing" | "abandoned" | "replaying") =>
+  const gameCount = (status: "playing" | "abandoned" | "replaying" | "platinado") =>
     allGames.filter((game) => game.status === status).length;
   const isGames = useLocation().pathname.startsWith("/games");
 
@@ -22,6 +22,7 @@ export function App() {
         gamePlayingCount={gameCount("playing")}
         gameAbandonedCount={gameCount("abandoned")}
         gameReplayingCount={gameCount("replaying")}
+        gamePlatinadoCount={gameCount("platinado")}
         isGames={isGames}
         userName={user.name}
         userEmail={user.email}

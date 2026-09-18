@@ -1,4 +1,4 @@
-export type GameStatus = "want" | "playing" | "completed" | "abandoned" | "replaying";
+export type GameStatus = "want" | "playing" | "completed" | "abandoned" | "replaying" | "platinado";
 
 export type Game = {
   id: number;
