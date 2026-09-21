@@ -47,6 +47,15 @@ export class RawgClient {
     });
   }
 
+  recommendedGames(genreSlugs: string[], page = 1) {
+    return this.get<RawgPagedPayload>("/games", {
+      genres: genreSlugs.join(","),
+      ordering: "-rating",
+      page: String(page),
+      page_size: "20",
+    });
+  }
+
   gameDetails(id: number) {
     return this.get<RawgGamePayload>(`/games/${id}`, {});
   }

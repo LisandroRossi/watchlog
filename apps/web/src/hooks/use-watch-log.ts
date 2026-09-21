@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import type { Movie } from "@watchlog/shared";
 import { libraryApi } from "../infrastructure/library-api";
 import { LocalWatchLog } from "../infrastructure/local-watch-log";
+import { movieApi } from "../infrastructure/movie-api";
 import { useAuth } from "./auth-context";
 
 type LoggedMovie = Movie & { status: "watched" | "pending" | "watching" };
@@ -30,7 +31,18 @@ export function useWatchLog() {
         localStorage.removeItem(`watchlog.${user.id}.pending`);
         localStorage.removeItem(`watchlog.${user.id}.watching`);
       }
-      setAll(remote);
+      const enriched = await Promise.all(remote.map(async (movie) => {
+        if (movie.genres.length) return movie;
+        try {
+          const details = await movieApi.details(movie.id, movie.mediaType);
+          const updated = { ...movie, ...details, status: movie.status };
+          await libraryApi.save("movie", movie.id, movie.status, updated);
+          return updated;
+        } catch {
+          return movie;
+        }
+      }));
+      setAll(enriched);
     } catch {
       const local = new LocalWatchLog(user.id);
       setAll([

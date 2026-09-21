@@ -5,6 +5,7 @@ import { useGameLogContext } from "../hooks/game-log-context";
 import { useGameSearch } from "../hooks/use-game-search";
 import { usePopularGames } from "../hooks/use-popular-games";
 import { ModeSwitcher } from "../components/layout/ModeSwitcher";
+import { useGameRecommendations } from "../hooks/use-recommendations";
 
 type GamesPageProps = {
   status?: GameStatus;
@@ -15,6 +16,8 @@ export function GamesPage({ status }: GamesPageProps) {
   const { games, loading, error } = usePopularGames();
   const search = useGameSearch(query);
   const log = useGameLogContext();
+  const gameGenres = useMemo(() => log.all.filter((game) => game.status !== "want").flatMap((game) => game.genres), [log.all]);
+  const recommendations = useGameRecommendations(gameGenres);
   const featured = games[0];
   const isSearching = query.trim().length > 0;
   const visible = useMemo(() => {
@@ -40,6 +43,7 @@ export function GamesPage({ status }: GamesPageProps) {
         </section>
       ) : null}
       <section><div className="section-head"><h2>{status ? ({ want: "Quiero Jugar", playing: "Jugando", completed: "Completado", abandoned: "Abandonado", replaying: "Rejugando" }[status]) : isSearching ? "Resultados" : "Más valorados"}</h2></div>{isSearching && search.loading ? <p>Buscando...</p> : null}<GameGrid games={visible} statusOf={log.statusOf} onWant={(game) => setStatus(game, "want")} onCompleted={(game) => setStatus(game, "completed")} onPlaying={(game) => setStatus(game, "playing")} onReplaying={(game) => setStatus(game, "replaying")} onAbandoned={(game) => setStatus(game, "abandoned")} onRemove={(game) => log.remove(game.id)} /></section>
+      {!status && !isSearching && gameGenres.length ? <section className="recommendation-section"><div className="section-head"><div><h2>Recomendado para vos</h2><p className="recommendation-note">Basado en tus géneros más jugados. Los títulos vienen de RAWG.</p></div></div>{recommendations.loading ? <p>Cargando recomendaciones...</p> : null}{recommendations.error ? <p className="error">{recommendations.error}</p> : null}<GameGrid games={recommendations.items} statusOf={log.statusOf} onWant={(game) => setStatus(game, "want")} onCompleted={(game) => setStatus(game, "completed")} onPlaying={(game) => setStatus(game, "playing")} onReplaying={(game) => setStatus(game, "replaying")} onAbandoned={(game) => setStatus(game, "abandoned")} onRemove={(game) => log.remove(game.id)} /></section> : null}
     </div>
   );
 }

@@ -81,7 +81,9 @@ En las variables de entorno de Vercel agregá:
 VITE_API_URL=https://TU-SERVICIO.onrender.com
 ```
 
-En Render, configurá `CORS_ORIGIN` con la URL final de Vercel, por ejemplo `https://watchlog.vercel.app`.
+En Render configurá `CORS_ORIGIN` con la URL final de Vercel, por ejemplo `https://watchlog.vercel.app`.
+
+Las recomendaciones no requieren una API de inteligencia artificial: el backend cuenta los géneros del historial, toma los tres más frecuentes y consulta TMDB o RAWG. Los títulos, portadas y datos mostrados siempre vienen de esas APIs.
 
 ## Scripts
 

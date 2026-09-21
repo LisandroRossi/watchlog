@@ -80,6 +80,7 @@ export function Sidebar({
             <NavLink to="/games/abandoned"><span>Abandonado</span><b className="nav__count">{gameAbandonedCount}</b></NavLink>
             <NavLink to="/games/replaying"><span>Rejugando</span><b className="nav__count">{gameReplayingCount}</b></NavLink>
             <NavLink to="/games/platinado"><span>Platinado</span><b className="nav__count">{gamePlatinadoCount}</b></NavLink>
+            <NavLink to="/games/stats">Estadísticas</NavLink>
           </>
         ) : isBooks ? (
           <>
@@ -94,6 +95,7 @@ export function Sidebar({
             <NavLink to="/watched"><span>Vistas</span><b className="nav__count">{watchedCount}</b></NavLink>
             <NavLink to="/pending"><span>Pendientes</span><b className="nav__count">{pendingCount}</b></NavLink>
             <NavLink to="/watching"><span>Mirando</span><b className="nav__count">{watchingCount}</b></NavLink>
+            <NavLink to="/stats">Estadísticas</NavLink>
           </>
         )}
       </nav>

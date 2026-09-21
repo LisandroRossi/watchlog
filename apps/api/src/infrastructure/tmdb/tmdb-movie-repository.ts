@@ -14,6 +14,7 @@ type TmdbMovieLike = {
   first_air_date?: string;
   vote_average?: number;
   genres?: { name: string }[];
+  genre_ids?: number[];
 };
 
 export class TmdbMovieRepository implements MovieRepository {
@@ -54,6 +55,13 @@ export class TmdbMovieRepository implements MovieRepository {
     };
   }
 
+  async recommendByGenres(genres: string[]): Promise<PagedMovies> {
+    const genreIds = genres.map((genre) => tmdbGenreIds[genre]).filter((id): id is number => id !== undefined);
+    if (!genreIds.length) return { page: 1, totalPages: 0, results: [] };
+    const payload = await this.client.discoverMovies(genreIds);
+    return { page: payload.page, totalPages: payload.total_pages, results: payload.results.map((movie) => this.toMovie(movie)) };
+  }
+
   private toMovie(payload: TmdbMovieLike): Movie {
     const date = payload.release_date || payload.first_air_date || "";
     return {
@@ -65,7 +73,32 @@ export class TmdbMovieRepository implements MovieRepository {
       backdropPath: posterUrl(payload.backdrop_path ?? null, this.imageBaseUrl, "w780"),
       releaseYear: date ? date.slice(0, 4) : null,
       voteAverage: Number((payload.vote_average ?? 0).toFixed(1)),
-      genres: payload.genres?.map((genre) => genre.name) ?? [],
+      genres: payload.genres?.map((genre) => genre.name) ?? payload.genre_ids?.map((id) => tmdbGenreNames[id]).filter(Boolean) ?? [],
     };
   }
 }
+
+const tmdbGenreIds: Record<string, number> = {
+  Acción: 28,
+  Aventura: 12,
+  Animación: 16,
+  Comedia: 35,
+  Crimen: 80,
+  Documental: 99,
+  Drama: 18,
+  Familia: 10751,
+  Fantasía: 14,
+  Historia: 36,
+  Terror: 27,
+  Música: 10402,
+  Misterio: 9648,
+  Romance: 10749,
+  "Ciencia ficción": 878,
+  Suspenso: 53,
+  Bélica: 10752,
+  Western: 37,
+};
+
+const tmdbGenreNames: Record<number, string> = Object.fromEntries(
+  Object.entries(tmdbGenreIds).map(([name, id]) => [id, name]),
+);

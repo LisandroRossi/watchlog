@@ -54,6 +54,15 @@ export class TmdbClient {
     });
   }
 
+  discoverMovies(genreIds: number[], page = 1) {
+    return this.get<TmdbPagedPayload>("/discover/movie", {
+      with_genres: genreIds.join(","),
+      page: String(page),
+      sort_by: "popularity.desc",
+      include_adult: "false",
+    });
+  }
+
   private async get<T>(pathname: string, params: Record<string, string>): Promise<T> {
     const url = new URL(`${this.baseUrl}${pathname}`);
     url.searchParams.set("api_key", this.apiKey);

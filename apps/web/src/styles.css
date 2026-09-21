@@ -522,6 +522,22 @@ main {
   color: var(--accent-2);
 }
 
+.recommendation-section {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid #303866;
+}
+
+.recommendation-note {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.game-page .recommendation-section {
+  border-top-color: #6c2638;
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
@@ -732,6 +748,102 @@ main {
 
 .game-status-page .empty {
   margin: 0;
+}
+
+.stats-page {
+  min-height: calc(100vh - 48px);
+}
+
+.stats-heading h1,
+.stats-page h1 {
+  margin: 8px 0 4px;
+}
+
+.stats-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.stat-card,
+.stats-panel {
+  border: 1px solid #303866;
+  border-radius: 16px;
+  background: rgba(20, 24, 51, 0.72);
+}
+
+.stat-card {
+  display: grid;
+  gap: 6px;
+  padding: 18px;
+}
+
+.stat-card strong {
+  font-size: 2rem;
+}
+
+.stat-card span,
+.stats-note {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.stats-panel {
+  padding: 20px;
+}
+
+.stats-panel h2 {
+  margin: 0 0 18px;
+}
+
+.stats-bars {
+  display: grid;
+  gap: 14px;
+}
+
+.stats-row > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+.stats-row b {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.stats-track,
+.stats-progress {
+  display: block;
+  height: 9px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #252b52;
+}
+
+.stats-track > span,
+.stats-progress > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+}
+
+.game-page .stat-card,
+.game-page .stats-panel {
+  border-color: #6c2638;
+  background: rgba(53, 19, 30, 0.84);
+}
+
+.game-page .stats-track > span,
+.game-page .stats-progress > span {
+  background: var(--game-red);
+}
+
+.movie-stats-page .stats-track > span {
+  background: var(--accent-2);
 }
 
 .book-page {

@@ -5,6 +5,7 @@ import { useMovieSearch } from "../hooks/use-movie-search";
 import { usePopularMovies } from "../hooks/use-popular-movies";
 import { useWatchLogContext } from "../hooks/watch-log-context";
 import { ModeSwitcher } from "../components/layout/ModeSwitcher";
+import { useMovieRecommendations } from "../hooks/use-recommendations";
 
 export function HomePage() {
   const [query, setQuery] = useState("");
@@ -22,6 +23,9 @@ export function HomePage() {
     unmarkWatching,
     remove,
   } = useWatchLogContext();
+  const { watched } = useWatchLogContext();
+  const movieGenres = useMemo(() => watched.flatMap((movie) => movie.genres), [watched]);
+  const recommendations = useMovieRecommendations(movieGenres);
 
   const featured = movies[0];
   const rest = movies.slice(1, 13);
@@ -86,6 +90,12 @@ export function HomePage() {
           onRemove={(movie) => remove(movie.id)}
         />
       </section>
+      {!isSearching && movieGenres.length ? <section className="recommendation-section">
+        <div className="section-head"><div><h2>Recomendado para vos</h2><p className="recommendation-note">Basado en tus géneros más vistos. Los títulos vienen de TMDB.</p></div></div>
+        {recommendations.loading ? <p>Cargando recomendaciones...</p> : null}
+        {recommendations.error ? <p className="error">{recommendations.error}</p> : null}
+        <MovieGrid movies={recommendations.items} isWatched={isWatched} isPending={isPending} isWatching={isWatching} onToggleWatched={(movie) => isWatched(movie.id) ? unmarkWatched(movie.id) : markWatched(movie)} onTogglePending={(movie) => isPending(movie.id) ? unmarkPending(movie.id) : markPending(movie)} onToggleWatching={(movie) => isWatching(movie.id) ? unmarkWatching(movie.id) : markWatching(movie)} onRemove={(movie) => remove(movie.id)} />
+      </section> : null}
     </div>
   );
 }

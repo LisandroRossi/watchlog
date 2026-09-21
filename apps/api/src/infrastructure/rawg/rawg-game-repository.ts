@@ -25,6 +25,12 @@ export class RawgGameRepository {
     return this.toPage(payload);
   }
 
+  async recommendByGenres(genres: string[]): Promise<PagedGames> {
+    const slugs = genres.map((genre) => rawgGenreSlugs[genre]).filter((slug): slug is string => Boolean(slug));
+    if (!slugs.length) return { page: 1, totalPages: 0, results: [] };
+    return this.toPage(await this.client.recommendedGames(slugs));
+  }
+
   async findById(id: number): Promise<Game | null> {
     try {
       return this.toGame(await this.client.gameDetails(id));
@@ -83,3 +89,24 @@ export class RawgGameRepository {
     return translations[genre] ?? genre;
   }
 }
+
+const rawgGenreSlugs: Record<string, string> = {
+  Acción: "action",
+  Aventura: "adventure",
+  Arcade: "arcade",
+  "Juegos de mesa": "board-games",
+  Casual: "casual",
+  Educativo: "educational",
+  Familiar: "family",
+  Lucha: "fighting",
+  Indie: "indie",
+  "Multijugador masivo": "massively-multiplayer",
+  Plataformas: "platformer",
+  Rompecabezas: "puzzle",
+  Carreras: "racing",
+  Rol: "role-playing-games-rpg",
+  Disparos: "shooter",
+  Simulación: "simulation",
+  Deportes: "sports",
+  Estrategia: "strategy",
+};
