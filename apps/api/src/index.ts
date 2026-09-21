@@ -15,6 +15,9 @@ import { GameController } from "./interfaces/http/game-controller.js";
 import { createGameRouter } from "./interfaces/http/game-router.js";
 import { AuthStore } from "./infrastructure/auth/auth-store.js";
 import { createAuthRouter } from "./interfaces/http/auth-router.js";
+import { OpenLibraryClient } from "./infrastructure/openlibrary-client.js";
+import { BookController } from "./interfaces/http/book-controller.js";
+import { createBookRouter } from "./interfaces/http/book-router.js";
 
 const tmdb = new TmdbClient(env.tmdbBaseUrl, env.tmdbApiKey);
 const movies = new TmdbMovieRepository(tmdb, env.tmdbImageBaseUrl);
@@ -35,6 +38,7 @@ app.get("/api/health", (_req, res) => {
 app.use("/api/movies", createMovieRouter(controller));
 app.use("/api/games", createGameRouter(new GameController(games)));
 app.use("/api/auth", createAuthRouter(new AuthStore()));
+app.use("/api/books", createBookRouter(new BookController(new OpenLibraryClient())));
 app.use(errorHandler);
 
 app.listen(env.port, () => {

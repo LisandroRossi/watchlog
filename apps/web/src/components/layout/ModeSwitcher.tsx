@@ -9,6 +9,9 @@ export function ModeSwitcher() {
       <NavLink to="/games" className={({ isActive }) => isActive ? "mode-switcher__button mode-switcher__button--games active" : "mode-switcher__button mode-switcher__button--games"}>
         Videojuegos
       </NavLink>
+      <NavLink to="/books" className={({ isActive }) => isActive ? "mode-switcher__button mode-switcher__button--books active" : "mode-switcher__button mode-switcher__button--books"}>
+        Libros
+      </NavLink>
     </nav>
   );
 }

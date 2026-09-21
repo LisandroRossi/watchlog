@@ -5,16 +5,20 @@ type HeroFeaturedProps = {
   movie: Movie;
   watched: boolean;
   pending: boolean;
+  watching: boolean;
   onToggleWatched: () => void;
   onTogglePending: () => void;
+  onToggleWatching: () => void;
 };
 
 export function HeroFeatured({
   movie,
   watched,
   pending,
+  watching,
   onToggleWatched,
   onTogglePending,
+  onToggleWatching,
 }: HeroFeaturedProps) {
   return (
     <section className="hero">
@@ -40,6 +44,9 @@ export function HeroFeatured({
           </button>
           <button className="btn" onClick={onTogglePending} type="button">
             {pending ? "Quitar pendiente" : "Pendiente"}
+          </button>
+          <button className={watching ? "btn btn--watching" : "btn"} onClick={onToggleWatching} type="button">
+            {watching ? "Quitar mirando" : "Mirando"}
           </button>
         </div>
       </div>

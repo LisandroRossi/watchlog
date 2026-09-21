@@ -40,6 +40,7 @@ export function GameStatusPage({ status }: GameStatusPageProps) {
         onReplaying={(game) => setStatus(game, "replaying")}
         onAbandoned={(game) => setStatus(game, "abandoned")}
         onPlatinado={(game) => setStatus(game, "platinado")}
+        onRemove={(game) => log.remove(game.id)}
       />
     </div>
   );

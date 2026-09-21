@@ -8,7 +8,7 @@ export function MovieDetailPage() {
   const movieId = id ? Number(id) : undefined;
   const mediaType = new URLSearchParams(window.location.search).get("type") as Movie["mediaType"];
   const { movie, loading, error } = useMovieDetails(movieId, mediaType);
-  const { watched: watchedMovies, isWatched, markWatched, unmarkWatched, updateWatchedMovie } =
+  const { watched: watchedMovies, isWatched, isWatching, markWatched, unmarkWatched, markWatching, unmarkWatching, updateWatchedMovie } =
     useWatchLogContext();
 
   if (loading) {
@@ -46,6 +46,12 @@ export function MovieDetailPage() {
           onClick={() => (isMovieWatched ? unmarkWatched(movie.id) : markWatched(movie))}
         >
           {isMovieWatched ? "Quitar de vistas" : "Marcar como vista"}
+        </button>
+        <button
+          className={isWatching(movie.id) ? "btn btn--watching" : "btn"}
+          onClick={() => (isWatching(movie.id) ? unmarkWatching(movie.id) : markWatching(movie))}
+        >
+          {isWatching(movie.id) ? "Quitar de mirando" : "Agregar a mirando"}
         </button>
 
         {isMovieWatched ? (

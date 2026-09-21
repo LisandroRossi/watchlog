@@ -53,6 +53,12 @@ export function useGameLog() {
     refresh();
   }, [all, refresh]);
 
+  const remove = useCallback((id: number) => {
+    if (!log) return;
+    log.saveAll(all.filter((game) => game.id !== id));
+    refresh();
+  }, [all, refresh]);
+
   const setStatus = useCallback((game: Game, status: GameStatus) => {
     if (!log) return;
     const next = all.some((item) => item.id === game.id)
@@ -68,5 +74,5 @@ export function useGameLog() {
     refresh();
   }, [all, refresh]);
 
-  return { watched, pending, all, statusOf, isWatched, isPending, markWatched, unmarkWatched, markPending, unmarkPending, setStatus, updateWatchedGame };
+  return { watched, pending, all, statusOf, isWatched, isPending, markWatched, unmarkWatched, markPending, unmarkPending, remove, setStatus, updateWatchedGame };
 }

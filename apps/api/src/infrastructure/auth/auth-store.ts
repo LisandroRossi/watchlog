@@ -81,7 +81,7 @@ export class AuthStore {
   userForSession(token: string | undefined): AuthUser | null {
     if (!token) return null;
     const row = this.database
-      .prepare(`SELECT users.id, users.email, sessions.expires_at
+      .prepare(`SELECT users.id, users.email, users.name, sessions.expires_at
         FROM sessions JOIN users ON users.id = sessions.user_id
         WHERE sessions.token = ?`)
       .get(token) as (AuthUser & { expires_at: string }) | undefined;

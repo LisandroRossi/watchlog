@@ -3,7 +3,7 @@ import { ModeSwitcher } from "../components/layout/ModeSwitcher";
 import { useWatchLogContext } from "../hooks/watch-log-context";
 
 export function WatchedPage() {
-  const { watched, isWatched } = useWatchLogContext();
+  const { watched, isWatched, unmarkWatched } = useWatchLogContext();
 
   return (
     <div className="page">
@@ -13,7 +13,7 @@ export function WatchedPage() {
         Marcá películas desde el detalle para ir armando tu bitácora. Se guarda en este
         navegador.
       </p>
-      <MovieGrid movies={watched} isWatched={isWatched} />
+      <MovieGrid movies={watched} isWatched={isWatched} onRemove={(movie) => unmarkWatched(movie.id)} />
     </div>
   );
 }

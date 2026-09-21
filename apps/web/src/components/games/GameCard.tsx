@@ -11,11 +11,27 @@ type Props = {
   onReplaying?: () => void;
   onAbandoned?: () => void;
   onPlatinado?: () => void;
+  onRemove?: () => void;
 };
 
-export function GameCard({ game, status, actionMode, onWant, onCompleted, onPlaying, onReplaying, onAbandoned, onPlatinado }: Props) {
+export function GameCard({ game, status, actionMode, onWant, onCompleted, onPlaying, onReplaying, onAbandoned, onPlatinado, onRemove }: Props) {
   return (
-    <article className="card game-card">
+    <article className={`card game-card${onRemove && status ? " card--has-remove" : ""}`}>
+      {onRemove && status ? (
+        <button
+          className="card__remove"
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            onRemove();
+          }}
+          type="button"
+          aria-label={`Borrar ${game.title}`}
+          title="Borrar de tu lista"
+        >
+          ×
+        </button>
+      ) : null}
       <Link to={`/games/${game.id}`} className="card__link">
         {game.coverUrl ? <img src={game.coverUrl} alt="" /> : <div className="card__placeholder">{game.title}</div>}
         {status ? <span className={`badge ${status === "completed" || status === "platinado" ? "game-badge" : "badge--pending"}`}>{status === "want" ? "Quiero jugar" : status === "playing" ? "Jugando" : status === "completed" ? "Jugado" : status === "replaying" ? "Rejugando" : status === "platinado" ? "Platinado" : "Abandonado"}</span> : null}

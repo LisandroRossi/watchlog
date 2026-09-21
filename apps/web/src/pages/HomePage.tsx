@@ -13,10 +13,14 @@ export function HomePage() {
   const {
     isWatched,
     isPending,
+    isWatching,
     markWatched,
     unmarkWatched,
     markPending,
     unmarkPending,
+    markWatching,
+    unmarkWatching,
+    remove,
   } = useWatchLogContext();
 
   const featured = movies[0];
@@ -46,11 +50,15 @@ export function HomePage() {
           movie={featured}
           watched={isWatched(featured.id)}
           pending={isPending(featured.id)}
+          watching={isWatching(featured.id)}
           onToggleWatched={() =>
             isWatched(featured.id) ? unmarkWatched(featured.id) : markWatched(featured)
           }
           onTogglePending={() =>
             isPending(featured.id) ? unmarkPending(featured.id) : markPending(featured)
+          }
+          onToggleWatching={() =>
+            isWatching(featured.id) ? unmarkWatching(featured.id) : markWatching(featured)
           }
         />
       ) : null}
@@ -71,6 +79,11 @@ export function HomePage() {
           onTogglePending={(movie) =>
             isPending(movie.id) ? unmarkPending(movie.id) : markPending(movie)
           }
+          isWatching={isWatching}
+          onToggleWatching={(movie) =>
+            isWatching(movie.id) ? unmarkWatching(movie.id) : markWatching(movie)
+          }
+          onRemove={(movie) => remove(movie.id)}
         />
       </section>
     </div>

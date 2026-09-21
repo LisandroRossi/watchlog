@@ -11,9 +11,10 @@ type Props = {
   onReplaying?: (game: Game) => void;
   onAbandoned?: (game: Game) => void;
   onPlatinado?: (game: Game) => void;
+  onRemove?: (game: Game) => void;
 };
 
-export function GameGrid({ games, statusOf, actionMode, onWant, onCompleted, onPlaying, onReplaying, onAbandoned, onPlatinado }: Props) {
+export function GameGrid({ games, statusOf, actionMode, onWant, onCompleted, onPlaying, onReplaying, onAbandoned, onPlatinado, onRemove }: Props) {
   if (!games.length) return <p className="empty">No hay videojuegos para mostrar.</p>;
   return (
     <div className="grid">
@@ -29,6 +30,7 @@ export function GameGrid({ games, statusOf, actionMode, onWant, onCompleted, onP
           onReplaying={onReplaying ? () => onReplaying(game) : undefined}
           onAbandoned={onAbandoned ? () => onAbandoned(game) : undefined}
           onPlatinado={onPlatinado ? () => onPlatinado(game) : undefined}
+          onRemove={onRemove ? () => onRemove(game) : undefined}
         />
       ))}
     </div>
