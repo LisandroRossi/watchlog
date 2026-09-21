@@ -57,6 +57,15 @@ Cuando `DATABASE_URL` existe, la API usa PostgreSQL y crea las tablas si todaví
 
 La migración cubre las tablas de autenticación (`users` y `sessions`) y la biblioteca sincronizada (`library_items`). Al iniciar sesión, la aplicación sube automáticamente los registros antiguos de `localStorage` y los elimina del navegador solo después de confirmarlos en la API.
 
+### Deploy en Render
+
+Configurá el servicio con la raíz del repositorio como **Root Directory**:
+
+- **Build Command:** `npm install && npm run build -w @watchlog/api`
+- **Start Command:** `npm start -w @watchlog/api`
+
+El build de la API compila primero `@watchlog/shared`, por lo que Render debe ejecutar el build antes del start. También configurá `DATABASE_URL`, `TMDB_API_KEY`, `CORS_ORIGIN` y las demás variables necesarias en Environment.
+
 ## Scripts
 
 | Script | Qué hace |

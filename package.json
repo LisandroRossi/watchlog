@@ -9,7 +9,7 @@
     "dev": "concurrently -n api,web -c cyan,magenta \"npm run dev -w @watchlog/api\" \"npm run dev -w @watchlog/web\"",
     "dev:api": "npm run dev -w @watchlog/api",
     "dev:web": "npm run dev -w @watchlog/web",
-    "build": "npm run build -w @watchlog/api && npm run build -w @watchlog/web",
+    "build": "npm run build -w @watchlog/shared && npm run build -w @watchlog/api && npm run build -w @watchlog/web",
     "test": "npm run test -w @watchlog/api"
   },
   "devDependencies": {
