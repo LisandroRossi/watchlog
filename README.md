@@ -8,7 +8,7 @@ Stack inicial: **React + Vite** (web responsive) y **Node + Express** (API). El 
 
 - Home con películas populares y búsqueda
 - Detalle (descripción, año, rating, géneros)
-- Login y registro persistidos en SQLite
+- Login y registro persistidos en PostgreSQL/Supabase o SQLite local
 - Listas de cada usuario aisladas por cuenta
 - La API key de TMDB vive solo en el servidor
 
@@ -41,7 +41,21 @@ npm run dev
 - Web: http://localhost:5173
 - API: http://localhost:4000/api/health
 
-La base de datos SQLite se crea automáticamente como `apps/api/watchlog.sqlite`. El primer usuario que inicie sesión recibe los datos legacy de `localStorage`, si existían.
+En desarrollo, si no configurás `DATABASE_URL`, la base SQLite se crea automáticamente como `apps/api/watchlog.sqlite`.
+
+### Supabase / PostgreSQL
+
+1. Creá un proyecto en Supabase.
+2. Abrí **SQL Editor** y ejecutá [`supabase/schema.sql`](supabase/schema.sql).
+3. Copiá la connection string de PostgreSQL de Supabase en `apps/api/.env`:
+
+```env
+DATABASE_URL=postgresql://postgres:[PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres?sslmode=require
+```
+
+Cuando `DATABASE_URL` existe, la API usa PostgreSQL y crea las tablas si todavía no existen. Si no existe, mantiene SQLite para desarrollo local.
+
+La migración cubre las tablas de autenticación (`users` y `sessions`) y la biblioteca sincronizada (`library_items`). Al iniciar sesión, la aplicación sube automáticamente los registros antiguos de `localStorage` y los elimina del navegador solo después de confirmarlos en la API.
 
 ## Scripts
 

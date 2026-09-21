@@ -1,107 +1,77 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { Movie } from "@watchlog/shared";
+import { libraryApi } from "../infrastructure/library-api";
 import { LocalWatchLog } from "../infrastructure/local-watch-log";
 import { useAuth } from "./auth-context";
 
+type LoggedMovie = Movie & { status: "watched" | "pending" | "watching" };
+
 export function useWatchLog() {
   const { user } = useAuth();
-  const watchLog = useMemo(() => user ? new LocalWatchLog(user.id) : null, [user]);
-  const [watched, setWatched] = useState<Movie[]>([]);
-  const [pending, setPending] = useState<Movie[]>([]);
-  const [watching, setWatching] = useState<Movie[]>([]);
+  const [all, setAll] = useState<LoggedMovie[]>([]);
 
-  useEffect(() => {
-    if (!watchLog) return;
-    setWatched(watchLog.list());
-    setPending(watchLog.listPending());
-    setWatching(watchLog.listWatching());
-  }, [watchLog]);
+  const refresh = useCallback(async () => {
+    if (!user) return;
+    try {
+      let remote = (await libraryApi.list<LoggedMovie>("movie")).items;
+      const local = new LocalWatchLog(user.id);
+      const migrated = [
+        ...local.list().map((movie) => ({ ...movie, status: "watched" as const })),
+        ...local.listPending().map((movie) => ({ ...movie, status: "pending" as const })),
+        ...local.listWatching().map((movie) => ({ ...movie, status: "watching" as const })),
+      ];
+      const missing = migrated.filter((movie) => !remote.some((item) => item.id === movie.id));
+      if (missing.length) {
+        await Promise.all(missing.map((movie) => libraryApi.save("movie", movie.id, movie.status, movie)));
+        remote = [...remote, ...missing];
+      }
+      if (migrated.length) {
+        localStorage.removeItem(`watchlog.${user.id}.watched`);
+        localStorage.removeItem(`watchlog.${user.id}.pending`);
+        localStorage.removeItem(`watchlog.${user.id}.watching`);
+      }
+      setAll(remote);
+    } catch {
+      const local = new LocalWatchLog(user.id);
+      setAll([
+        ...local.list().map((movie) => ({ ...movie, status: "watched" as const })),
+        ...local.listPending().map((movie) => ({ ...movie, status: "pending" as const })),
+        ...local.listWatching().map((movie) => ({ ...movie, status: "watching" as const })),
+      ]);
+    }
+  }, [user]);
 
-  const isWatched = useCallback((id: number) => watched.some((movie) => movie.id === id), [watched]);
-  const isPending = useCallback((id: number) => pending.some((movie) => movie.id === id), [pending]);
-  const isWatching = useCallback((id: number) => watching.some((movie) => movie.id === id), [watching]);
+  useEffect(() => { void refresh(); }, [refresh]);
 
-  const updateWatchedMovie = useCallback(
-    (id: number, updates: Partial<Pick<Movie, "rating" | "review">>) => {
-      if (!watchLog) return;
-      watchLog.update(id, updates);
-      setWatched(watchLog.list());
-    },
-    [watchLog],
-  );
+  const saveStatus = useCallback(async (movie: Movie, status: LoggedMovie["status"]) => {
+    const next = { ...movie, status };
+    setAll((items) => [next, ...items.filter((item) => item.id !== movie.id)]);
+    await libraryApi.save("movie", movie.id, status, next);
+  }, []);
 
-  const markWatched = useCallback((movie: Movie) => {
-    if (!watchLog) return;
-    watchLog.add(movie);
-    watchLog.removePending(movie.id);
-    watchLog.removeWatching(movie.id);
-    setWatched(watchLog.list());
-    setPending(watchLog.listPending());
-    setWatching(watchLog.listWatching());
-  }, [watchLog]);
+  const remove = useCallback(async (id: number) => {
+    setAll((items) => items.filter((item) => item.id !== id));
+    await libraryApi.remove("movie", id);
+  }, []);
 
-  const unmarkWatched = useCallback((id: number) => {
-    if (!watchLog) return;
-    watchLog.remove(id);
-    setWatched(watchLog.list());
-  }, [watchLog]);
+  const statusOf = useCallback((id: number) => all.find((movie) => movie.id === id)?.status, [all]);
+  const watched = all.filter((movie) => movie.status === "watched");
+  const pending = all.filter((movie) => movie.status === "pending");
+  const watching = all.filter((movie) => movie.status === "watching");
+  const isWatched = useCallback((id: number) => statusOf(id) === "watched", [statusOf]);
+  const isPending = useCallback((id: number) => statusOf(id) === "pending", [statusOf]);
+  const isWatching = useCallback((id: number) => statusOf(id) === "watching", [statusOf]);
+  const markWatched = useCallback((movie: Movie) => void saveStatus(movie, "watched"), [saveStatus]);
+  const markPending = useCallback((movie: Movie) => void saveStatus(movie, "pending"), [saveStatus]);
+  const markWatching = useCallback((movie: Movie) => void saveStatus(movie, "watching"), [saveStatus]);
+  const unmarkWatched = useCallback((id: number) => void remove(id), [remove]);
+  const unmarkPending = useCallback((id: number) => void remove(id), [remove]);
+  const unmarkWatching = useCallback((id: number) => void remove(id), [remove]);
+  const updateWatchedMovie = useCallback(async (id: number, updates: Partial<Pick<Movie, "rating" | "review">>) => {
+    const current = all.find((movie) => movie.id === id);
+    if (!current) return;
+    await saveStatus({ ...current, ...updates }, "watched");
+  }, [all, saveStatus]);
 
-  const markPending = useCallback((movie: Movie) => {
-    if (!watchLog) return;
-    watchLog.remove(movie.id);
-    watchLog.addPending(movie);
-    watchLog.removeWatching(movie.id);
-    setWatched(watchLog.list());
-    setPending(watchLog.listPending());
-    setWatching(watchLog.listWatching());
-  }, [watchLog]);
-
-  const unmarkPending = useCallback((id: number) => {
-    if (!watchLog) return;
-    watchLog.removePending(id);
-    setPending(watchLog.listPending());
-  }, [watchLog]);
-
-  const markWatching = useCallback((movie: Movie) => {
-    if (!watchLog) return;
-    watchLog.remove(movie.id);
-    watchLog.removePending(movie.id);
-    watchLog.addWatching(movie);
-    setWatched(watchLog.list());
-    setPending(watchLog.listPending());
-    setWatching(watchLog.listWatching());
-  }, [watchLog]);
-
-  const unmarkWatching = useCallback((id: number) => {
-    if (!watchLog) return;
-    watchLog.removeWatching(id);
-    setWatching(watchLog.listWatching());
-  }, [watchLog]);
-
-  const remove = useCallback((id: number) => {
-    if (!watchLog) return;
-    watchLog.remove(id);
-    watchLog.removePending(id);
-    watchLog.removeWatching(id);
-    setWatched(watchLog.list());
-    setPending(watchLog.listPending());
-    setWatching(watchLog.listWatching());
-  }, [watchLog]);
-
-  return {
-    watched,
-    pending,
-    watching,
-    isWatched,
-    isPending,
-    isWatching,
-    updateWatchedMovie,
-    markWatched,
-    unmarkWatched,
-    markPending,
-    unmarkPending,
-    markWatching,
-    unmarkWatching,
-    remove,
-  };
+  return { watched, pending, watching, all, statusOf, isWatched, isPending, isWatching, markWatched, unmarkWatched, markPending, unmarkPending, markWatching, unmarkWatching, remove, updateWatchedMovie };
 }

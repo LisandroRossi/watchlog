@@ -15,6 +15,9 @@ import { GameController } from "./interfaces/http/game-controller.js";
 import { createGameRouter } from "./interfaces/http/game-router.js";
 import { AuthStore } from "./infrastructure/auth/auth-store.js";
 import { createAuthRouter } from "./interfaces/http/auth-router.js";
+import { PostgresAuthStore } from "./infrastructure/auth/postgres-auth-store.js";
+import { LibraryStore } from "./infrastructure/library-store.js";
+import { createLibraryRouter } from "./interfaces/http/library-router.js";
 import { OpenLibraryClient } from "./infrastructure/openlibrary-client.js";
 import { BookController } from "./interfaces/http/book-controller.js";
 import { createBookRouter } from "./interfaces/http/book-router.js";
@@ -22,6 +25,10 @@ import { createBookRouter } from "./interfaces/http/book-router.js";
 const tmdb = new TmdbClient(env.tmdbBaseUrl, env.tmdbApiKey);
 const movies = new TmdbMovieRepository(tmdb, env.tmdbImageBaseUrl);
 const games = new RawgGameRepository(new RawgClient(env.rawgBaseUrl, env.rawgApiKey));
+
+const postgresAuthStore = env.databaseUrl ? new PostgresAuthStore(env.databaseUrl) : null;
+const authStore = postgresAuthStore ?? new AuthStore();
+const library = postgresAuthStore ? new LibraryStore(postgresAuthStore.pool) : null;
 
 const controller = new MovieController(
   new SearchMovies(movies),
@@ -37,7 +44,8 @@ app.get("/api/health", (_req, res) => {
 });
 app.use("/api/movies", createMovieRouter(controller));
 app.use("/api/games", createGameRouter(new GameController(games)));
-app.use("/api/auth", createAuthRouter(new AuthStore()));
+app.use("/api/auth", createAuthRouter(authStore));
+if (library) app.use("/api/library", createLibraryRouter(library, authStore));
 app.use("/api/books", createBookRouter(new BookController(new OpenLibraryClient())));
 app.use(errorHandler);
 

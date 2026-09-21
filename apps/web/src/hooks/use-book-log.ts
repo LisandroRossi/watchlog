@@ -1,42 +1,55 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { Book, BookStatus } from "@watchlog/shared";
+import { libraryApi } from "../infrastructure/library-api";
 import { LocalBookLog } from "../infrastructure/local-book-log";
 import { useAuth } from "./auth-context";
 
+type LoggedBook = Book & { status: BookStatus };
+
 export function useBookLog() {
   const { user } = useAuth();
-  const log = useMemo(() => user ? new LocalBookLog(user.id) : null, [user]);
-  const [all, setAll] = useState<(Book & { status: BookStatus })[]>([]);
+  const [all, setAll] = useState<LoggedBook[]>([]);
 
-  const refresh = useCallback(() => {
-    if (log) setAll(log.all());
-  }, [log]);
+  const refresh = useCallback(async () => {
+    if (!user) return;
+    try {
+      let remote = (await libraryApi.list<LoggedBook>("book")).items;
+      const local = new LocalBookLog(user.id);
+      const migrated = local.all();
+      const missing = migrated.filter((book) => !remote.some((item) => item.id === book.id));
+      if (missing.length) {
+        await Promise.all(missing.map((book) => libraryApi.save("book", book.id, book.status, book)));
+        remote = [...remote, ...missing];
+      }
+      if (migrated.length) {
+        localStorage.removeItem(`watchlog.${user.id}.books`);
+      }
+      setAll(remote);
+    } catch {
+      setAll(new LocalBookLog(user.id).all());
+    }
+  }, [user]);
 
-  useEffect(refresh, [refresh]);
+  useEffect(() => { void refresh(); }, [refresh]);
+
+  const setStatus = useCallback(async (book: Book, status: BookStatus) => {
+    const next = { ...book, status };
+    setAll((items) => [next, ...items.filter((item) => item.id !== book.id)]);
+    await libraryApi.save("book", book.id, status, next);
+  }, []);
+
+  const remove = useCallback(async (id: string) => {
+    setAll((items) => items.filter((book) => book.id !== id));
+    await libraryApi.remove("book", id);
+  }, []);
+
+  const updatePage = useCallback(async (id: string, currentPage: number | undefined) => {
+    const current = all.find((book) => book.id === id);
+    if (current) await setStatus({ ...current, currentPage }, "reading");
+  }, [all, setStatus]);
 
   const statusOf = useCallback((id: string) => all.find((book) => book.id === id)?.status, [all]);
   const byStatus = useCallback((status: BookStatus) => all.filter((book) => book.status === status), [all]);
-
-  const setStatus = useCallback((book: Book, status: BookStatus) => {
-    if (!log) return;
-    const next = all.some((item) => item.id === book.id)
-      ? all.map((item) => item.id === book.id ? { ...item, status } : item)
-      : [{ ...book, status }, ...all];
-    log.saveAll(next);
-    refresh();
-  }, [all, log, refresh]);
-
-  const remove = useCallback((id: string) => {
-    if (!log) return;
-    log.saveAll(all.filter((book) => book.id !== id));
-    refresh();
-  }, [all, log, refresh]);
-
-  const updatePage = useCallback((id: string, currentPage: number | undefined) => {
-    if (!log) return;
-    log.saveAll(all.map((book) => book.id === id ? { ...book, currentPage } : book));
-    refresh();
-  }, [all, log, refresh]);
 
   return { all, byStatus, statusOf, setStatus, remove, updatePage };
 }

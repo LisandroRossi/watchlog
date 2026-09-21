@@ -16,6 +16,7 @@ function required(name: string): string {
 
 export const env = {
   port: Number(process.env.PORT ?? 4000),
+  databaseUrl: process.env.DATABASE_URL ?? "",
   tmdbApiKey: required("TMDB_API_KEY"),
   tmdbBaseUrl: process.env.TMDB_BASE_URL ?? "https://api.themoviedb.org/3",
   tmdbImageBaseUrl:
