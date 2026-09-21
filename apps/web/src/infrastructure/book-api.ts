@@ -10,6 +10,9 @@ async function getJson<T>(url: string): Promise<T> {
 }
 
 export const bookApi = {
+  recommended() {
+    return getJson<PagedBooks>(`${API_BASE}/recommended`);
+  },
   search(query: string, page = 1) {
     const params = new URLSearchParams({ q: query, page: String(page) });
     return getJson<PagedBooks>(`${API_BASE}/search?${params}`);
