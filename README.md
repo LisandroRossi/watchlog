@@ -50,8 +50,10 @@ En desarrollo, si no configurás `DATABASE_URL`, la base SQLite se crea automát
 3. Copiá la connection string de PostgreSQL de Supabase en `apps/api/.env`:
 
 ```env
-DATABASE_URL=postgresql://postgres:[PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres?sslmode=require
+DATABASE_URL=postgresql://postgres.[PROJECT-REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:6543/postgres?sslmode=require
 ```
+
+Usá la cadena **Session pooler** de Supabase, disponible en **Connect > Connection string > Transaction pooler/Session pooler**. Para Render recomendamos el pooler en el puerto `6543`; el host directo `db.[PROJECT-REF].supabase.co` puede resolver a IPv6 y producir `ENETUNREACH`.
 
 Cuando `DATABASE_URL` existe, la API usa PostgreSQL y crea las tablas si todavía no existen. Si no existe, mantiene SQLite para desarrollo local.
 
@@ -65,6 +67,21 @@ Configurá el servicio con la raíz del repositorio como **Root Directory**:
 - **Start Command:** `npm start -w @watchlog/api`
 
 El build de la API compila primero `@watchlog/shared`, por lo que Render debe ejecutar el build antes del start. También configurá `DATABASE_URL`, `TMDB_API_KEY`, `CORS_ORIGIN` y las demás variables necesarias en Environment.
+
+### Deploy del frontend en Vercel
+
+Importá el mismo repositorio en Vercel. El archivo [`vercel.json`](vercel.json) ya configura el monorepo:
+
+- **Build Command:** `npm run build -w @watchlog/web`
+- **Output Directory:** `apps/web/dist`
+
+En las variables de entorno de Vercel agregá:
+
+```env
+VITE_API_URL=https://TU-SERVICIO.onrender.com
+```
+
+En Render, configurá `CORS_ORIGIN` con la URL final de Vercel, por ejemplo `https://watchlog.vercel.app`.
 
 ## Scripts
 

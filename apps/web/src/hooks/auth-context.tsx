@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { apiUrl } from "../infrastructure/api-url";
 
 export type User = { id: string; email: string; name: string };
 
@@ -34,7 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false);
       return;
     }
-    fetch("/api/auth/me", { headers: { Authorization: `Bearer ${token}` } })
+    fetch(apiUrl("/api/auth/me"), { headers: { Authorization: `Bearer ${token}` } })
       .then(async (response) => {
         if (!response.ok) throw new Error(await readError(response));
         const body = (await response.json()) as { user: User };
@@ -46,7 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const authenticate = async (path: "login" | "register", name: string, email: string, password: string) => {
     setError(null);
-    const response = await fetch(`/api/auth/${path}`, {
+    const response = await fetch(apiUrl(`/api/auth/${path}`), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(path === "register" ? { name, email, password } : { email, password }),
@@ -63,7 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     const token = localStorage.getItem(TOKEN_KEY);
-    if (token) await fetch("/api/auth/logout", { method: "POST", headers: { Authorization: `Bearer ${token}` } });
+    if (token) await fetch(apiUrl("/api/auth/logout"), { method: "POST", headers: { Authorization: `Bearer ${token}` } });
     localStorage.removeItem(TOKEN_KEY);
     setUser(null);
   };

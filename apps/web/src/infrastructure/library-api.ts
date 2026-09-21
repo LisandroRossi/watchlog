@@ -1,7 +1,8 @@
 import type { Book, Game, Movie } from "@watchlog/shared";
+import { apiUrl } from "./api-url";
 
 const TOKEN_KEY = "watchlog.auth.token";
-const API_BASE = "/api/library";
+const API_BASE = apiUrl("/api/library");
 
 type MediaType = "movie" | "book" | "game";
 type LibraryItem = (Movie | Book | Game) & { status: string };

@@ -1,6 +1,7 @@
 import type { Game, PagedGames } from "@watchlog/shared";
+import { apiUrl } from "./api-url";
 
-const API_BASE = "/api/games";
+const API_BASE = apiUrl("/api/games");
 
 async function getJson<T>(url: string): Promise<T> {
   const response = await fetch(url);

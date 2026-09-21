@@ -1,6 +1,7 @@
 import type { Movie, PagedMovies } from "@watchlog/shared";
+import { apiUrl } from "./api-url";
 
-const API_BASE = "/api/movies";
+const API_BASE = apiUrl("/api/movies");
 
 async function getJson<T>(url: string): Promise<T> {
   const response = await fetch(url);

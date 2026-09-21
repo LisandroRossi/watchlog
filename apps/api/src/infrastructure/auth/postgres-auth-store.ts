@@ -24,7 +24,10 @@ export class PostgresAuthStore {
   private readonly ready: Promise<void>;
 
   constructor(databaseUrl: string) {
-    this.pool = new Pool({ connectionString: databaseUrl, ssl: { rejectUnauthorized: false } });
+    this.pool = new Pool({
+      connectionString: databaseUrl,
+      ssl: { rejectUnauthorized: false },
+    });
     this.ready = this.pool.query(schema).then(() => undefined);
   }
 
