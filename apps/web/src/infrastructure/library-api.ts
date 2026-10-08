@@ -1,19 +1,17 @@
 import type { Book, Game, Movie } from "@watchlog/shared";
 import { apiUrl } from "./api-url";
 
-const TOKEN_KEY = "watchlog.auth.token";
 const API_BASE = apiUrl("/api/library");
 
 type MediaType = "movie" | "book" | "game";
 type LibraryItem = (Movie | Book | Game) & { status: string };
 
 async function request<T>(url: string, init?: RequestInit): Promise<T> {
-  const token = localStorage.getItem(TOKEN_KEY);
   const response = await fetch(url, {
     ...init,
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...init?.headers,
     },
   });

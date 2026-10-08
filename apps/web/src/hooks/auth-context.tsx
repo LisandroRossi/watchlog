@@ -12,7 +12,6 @@ type AuthContextValue = {
   logout: () => Promise<void>;
 };
 
-const TOKEN_KEY = "watchlog.auth.token";
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 function normalizeUser(user: User): User {
@@ -30,18 +29,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem(TOKEN_KEY);
-    if (!token) {
-      setLoading(false);
-      return;
-    }
-    fetch(apiUrl("/api/auth/me"), { headers: { Authorization: `Bearer ${token}` } })
+    fetch(apiUrl("/api/auth/me"), { credentials: "include" })
       .then(async (response) => {
         if (!response.ok) throw new Error(await readError(response));
         const body = (await response.json()) as { user: User };
         setUser(normalizeUser(body.user));
       })
-      .catch(() => localStorage.removeItem(TOKEN_KEY))
+      .catch(() => setUser(null))
       .finally(() => setLoading(false));
   }, []);
 
@@ -49,6 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setError(null);
     const response = await fetch(apiUrl(`/api/auth/${path}`), {
       method: "POST",
+      credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(path === "register" ? { name, email, password } : { email, password }),
     });
@@ -57,15 +52,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setError(message);
       throw new Error(message);
     }
-    const body = (await response.json()) as { user: User; token: string };
-    localStorage.setItem(TOKEN_KEY, body.token);
+    const body = (await response.json()) as { user: User };
     setUser(normalizeUser(body.user));
   };
 
   const logout = async () => {
-    const token = localStorage.getItem(TOKEN_KEY);
-    if (token) await fetch(apiUrl("/api/auth/logout"), { method: "POST", headers: { Authorization: `Bearer ${token}` } });
-    localStorage.removeItem(TOKEN_KEY);
+    await fetch(apiUrl("/api/auth/logout"), { method: "POST", credentials: "include" });
     setUser(null);
   };
 

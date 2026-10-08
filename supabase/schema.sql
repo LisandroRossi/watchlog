@@ -10,7 +10,7 @@ create table if not exists public.users (
 );
 
 create table if not exists public.sessions (
-  token text primary key,
+  token_hash text primary key,
   user_id text not null references public.users(id) on delete cascade,
   expires_at timestamptz not null
 );

@@ -13,7 +13,7 @@ const schema = `
     created_at timestamptz not null default now()
   );
   create table if not exists public.sessions (
-    token text primary key,
+    token_hash text primary key,
     user_id text not null references public.users(id) on delete cascade,
     expires_at timestamptz not null
   );
@@ -26,7 +26,7 @@ export class PostgresAuthStore {
   constructor(databaseUrl: string) {
     this.pool = new Pool({
       connectionString: databaseUrl,
-      ssl: { rejectUnauthorized: false },
+      ssl: { rejectUnauthorized: true },
     });
     this.ready = this.pool.query(schema).then(() => undefined);
   }
@@ -71,10 +71,11 @@ export class PostgresAuthStore {
   async createSession(userId: string): Promise<string> {
     await this.ready;
     const token = crypto.randomBytes(32).toString("hex");
+    const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
     const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30);
     await this.pool.query(
-      "insert into public.sessions (token, user_id, expires_at) values ($1, $2, $3)",
-      [token, userId, expiresAt],
+      "insert into public.sessions (token_hash, user_id, expires_at) values ($1, $2, $3)",
+      [tokenHash, userId, expiresAt],
     );
     return token;
   }
@@ -82,11 +83,12 @@ export class PostgresAuthStore {
   async userForSession(token: string | undefined): Promise<AuthUser | null> {
     if (!token) return null;
     await this.ready;
+    const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
     const result = await this.pool.query<AuthUser & { expires_at: Date }>(
       `select users.id, users.email, users.name, sessions.expires_at
        from public.sessions sessions join public.users users on users.id = sessions.user_id
-       where sessions.token = $1`,
-      [token],
+       where sessions.token_hash = $1`,
+      [tokenHash],
     );
     const row = result.rows[0];
     if (!row) return null;
@@ -99,7 +101,8 @@ export class PostgresAuthStore {
 
   async deleteSession(token: string): Promise<void> {
     await this.ready;
-    await this.pool.query("delete from public.sessions where token = $1", [token]);
+    const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+    await this.pool.query("delete from public.sessions where token_hash = $1", [tokenHash]);
   }
 
   private toAuthUser(user: AuthUser) {

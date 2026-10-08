@@ -2,6 +2,7 @@ import { Router } from "express";
 import type { AuthUser } from "../../infrastructure/auth/auth-store.js";
 import type { LibraryMediaType, LibraryStore } from "../../infrastructure/library-store.js";
 import { asyncHandler } from "./async-handler.js";
+import { sessionTokenFromRequest } from "./session-token.js";
 
 type SessionStore = { userForSession(token: string | undefined): AuthUser | null | Promise<AuthUser | null> };
 const mediaTypes = new Set<LibraryMediaType>(["movie", "book", "game"]);
@@ -9,8 +10,8 @@ const mediaTypes = new Set<LibraryMediaType>(["movie", "book", "game"]);
 export function createLibraryRouter(library: LibraryStore, sessions: SessionStore) {
   const router = Router();
   router.use(asyncHandler(async (request, response, next) => {
-    const token = request.header("authorization")?.replace(/^Bearer\s+/i, "");
-    const user = await sessions.userForSession(token);
+    const token = sessionTokenFromRequest(request);
+    const user = token ? await sessions.userForSession(token) : null;
     if (!user) {
       response.status(401).json({ message: "Sesión inválida." });
       return;

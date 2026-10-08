@@ -39,8 +39,15 @@ const controller = new MovieController(
 );
 
 const app = express();
-app.use(cors({ origin: env.corsOrigin }));
+app.use(cors({ origin: env.corsOrigin, credentials: true }));
 app.use(express.json());
+app.use((req, res, next) => {
+  res.setHeader("Content-Security-Policy", "default-src 'self'; base-uri 'self'; frame-ancestors 'none'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' https:; connect-src 'self' https: http:; form-action 'self'");
+  res.setHeader("Referrer-Policy", "no-referrer");
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  next();
+});
 app.get("/api/health", (_req, res) => {
   res.json({ ok: true, service: "watchlog-api" });
 });

@@ -7,7 +7,7 @@
     "dev": "tsx watch src/index.ts",
     "build": "npm run build -w @watchlog/shared && tsc -p tsconfig.json",
     "start": "node dist/index.js",
-    "test": "tsx --test src/application/search-movies.test.ts"
+    "test": "tsx --test src/application/search-movies.test.ts src/interfaces/http/auth-validation.test.ts src/infrastructure/auth/session-token.test.ts"
   },
   "dependencies": {
     "@types/better-sqlite3": "^9.6.0",

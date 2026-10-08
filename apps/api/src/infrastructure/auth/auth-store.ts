@@ -25,7 +25,7 @@ export class AuthStore {
         created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
       );
       CREATE TABLE IF NOT EXISTS sessions (
-        token TEXT PRIMARY KEY,
+        token_hash TEXT PRIMARY KEY,
         user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
         expires_at TEXT NOT NULL
       );
@@ -71,20 +71,22 @@ export class AuthStore {
 
   createSession(userId: string) {
     const token = crypto.randomBytes(32).toString("hex");
+    const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
     const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30).toISOString();
     this.database
-      .prepare("INSERT INTO sessions (token, user_id, expires_at) VALUES (?, ?, ?)")
-      .run(token, userId, expiresAt);
+      .prepare("INSERT INTO sessions (token_hash, user_id, expires_at) VALUES (?, ?, ?)")
+      .run(tokenHash, userId, expiresAt);
     return token;
   }
 
   userForSession(token: string | undefined): AuthUser | null {
     if (!token) return null;
+    const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
     const row = this.database
       .prepare(`SELECT users.id, users.email, users.name, sessions.expires_at
         FROM sessions JOIN users ON users.id = sessions.user_id
-        WHERE sessions.token = ?`)
-      .get(token) as (AuthUser & { expires_at: string }) | undefined;
+        WHERE sessions.token_hash = ?`)
+      .get(tokenHash) as (AuthUser & { expires_at: string }) | undefined;
     if (!row) return null;
     if (new Date(row.expires_at) <= new Date()) {
       this.deleteSession(token);
@@ -102,6 +104,11 @@ export class AuthStore {
   }
 
   deleteSession(token: string) {
-    this.database.prepare("DELETE FROM sessions WHERE token = ?").run(token);
+    const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+    this.database.prepare("DELETE FROM sessions WHERE token_hash = ?").run(tokenHash);
+  }
+
+  close() {
+    this.database.close();
   }
 }
